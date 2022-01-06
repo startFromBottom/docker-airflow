@@ -17,13 +17,14 @@ DAG = DAG(
 
 def push_function(**kwargs):
     message = 'This is the pushed message.'
-    ti = kwargs['ti']
-    ti.xcom_push(key="message", value=message)
+    # ti = kwargs['ti']
+    # ti.xcom_push(key="message", value=message)
+    return message
 
 
 def pull_function(**kwargs):
     ti = kwargs['ti']
-    pulled_message = ti.xcom_pull(key='message', task_ids='new_push_task')
+    pulled_message = ti.xcom_pull()
     print("Pulled Message: '%s'" % pulled_message)
 
 
@@ -45,10 +46,4 @@ t2 = PythonOperator(
     provide_context=True,
     dag=DAG)
 
-t3 = PythonOperator(
-    task_id='new_push_task',
-    python_callable=new_push_function,
-    provide_context=True,
-    dag=DAG)
-
-t1 >> t3 >> t2
+t1 >> t2
